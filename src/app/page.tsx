@@ -1,9 +1,24 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Users, Calendar, CreditCard, Shield, Zap, Star, ArrowRight } from "lucide-react";
+import { useAuth, SignInButton, SignUpButton } from "@clerk/nextjs";
+import UserButton from "@/components/auth/UserButton";
+import Link from "next/link";
 
 export default function Home() {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Navigation */}
@@ -21,9 +36,31 @@ export default function Home() {
           <a href="#pricing" className="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
           <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
         </div>
-        <Button variant="outline" className="hidden md:block">
-          Sign In
-        </Button>
+        <div className="flex items-center space-x-4">
+          {isSignedIn ? (
+            <>
+              <Link href="/dashboard">
+                <Button variant="outline">
+                  Dashboard
+                </Button>
+              </Link>
+              <UserButton />
+            </>
+          ) : (
+            <>
+              <SignInButton mode="modal">
+                <Button variant="outline">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button>
+                  Sign Up
+                </Button>
+              </SignUpButton>
+            </>
+          )}
+        </div>
       </nav>
 
       {/* Hero Section */}
@@ -45,13 +82,26 @@ export default function Home() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-          <Button size="lg" className="px-8 py-4 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
-            Start Free Trial
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
-            Watch Demo
-          </Button>
+          {isSignedIn ? (
+            <Link href="/dashboard">
+              <Button size="lg" className="px-8 py-4 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                Go to Dashboard
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+          ) : (
+            <>
+              <SignUpButton mode="modal">
+                <Button size="lg" className="px-8 py-4 text-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                  Start Free Trial
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </SignUpButton>
+              <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
+                Watch Demo
+              </Button>
+            </>
+          )}
         </div>
 
         <div className="flex justify-center items-center space-x-8 text-sm text-gray-500">
@@ -224,13 +274,26 @@ export default function Home() {
             Join hundreds of schools already using Edu Platform to streamline their operations and enhance student experience.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
-              Start Free Trial Now
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-blue-600">
-              Schedule Demo
-            </Button>
+            {isSignedIn ? (
+              <Link href="/dashboard">
+                <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <SignUpButton mode="modal">
+                  <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
+                    Start Free Trial Now
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </SignUpButton>
+                <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-blue-600">
+                  Schedule Demo
+                </Button>
+              </>
+            )}
           </div>
           <p className="text-blue-100 text-sm mt-4">
             No credit card required • 14-day free trial • Cancel anytime
